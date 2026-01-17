@@ -1,45 +1,68 @@
-# Backstory Consistency NLP (KDSH)
+# 📚 Backstory Consistency NLP - KDSH '26
 
-This project is a Retrieval Augmented Generation (RAG) system designed to check the consistency of character backstories against a corpus of books.
+> **A Retrieval Augmented Generation (RAG) system for verifying character backstory consistency in literature.**
 
-## Project Structure
+<div align="center">
 
-- `Code.ipynb`: The original Jupyter Notebook for development and experimentation.
-- `Dataset/`: Contains the training data (`train.csv`), test data (`test.csv`), and book texts in the `Books/` directory.
-- `data_ingestion.py`: Handles loading and embedding of book texts using Pathway and SentenceTransformers.
-- `query_generator.py`: Uses an LLM to decompose backstories into verifiable claims and generate search queries.
-- `evidence_retrieval.py`: Retrieves relevant evidence chunks from the embedded books using a cross-encoder reranker.
-- `verification.py`: Uses an LLM to verify claims against the retrieved evidence.
-- `validator.py`: Orchestrates the entire validation pipeline.
-- `results.csv`: Output of the validation process.
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Groq](https://img.shields.io/badge/Groq-API-orange?style=for-the-badge)
+![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-yellow?style=for-the-badge)
+![Pathway](https://img.shields.io/badge/Pathway-Data%20Processing-blue?style=for-the-badge)
+![Pandas](https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white)
 
-## Prerequisites
+</div>
 
+## 🏆 Project Overview
+
+This project was developed as a solution for the **Kharagpur Data Science Hackathon (KDSH) 2026** Challenge.
+
+The goal of this system is to automatically validate the consistency of character backstories against a provided corpus of books. By leveraging advanced NLP techniques, the system decomposes complex backstories into atomic claims, retrieves relevant evidence from the source texts, and uses a Large Language Model (LLM) to verify whether the claims are supported, contradicted, or not mentioned in the text.
+
+## 🛠️ Tech Stack
+
+This project is built using a modern AI/NLP stack:
+
+*   **🐍 Python**: The core programming language.
+*   **🚅 Pathway**: A high-performance data processing framework used for efficient document ingestion and handling live data streams.
+*   **🧠 SentenceTransformers**: Used for generating semantic embeddings (`all-MiniLM-L6-v2`) to capture the meaning of text chunks.
+*   **⚡ Groq API**: Powers the high-speed inference for the LLM (Llama 3 / Mixtral) used in reasoning and verification.
+*   **🔍 Cross-Encoder**: Utilized for precise re-ranking of retrieved evidence to ensure the most relevant context is sent to the LLM.
+*   **🐼 Pandas**: Employed for structured data manipulation and results tracking.
+
+## 📂 Project Structure
+
+| File | Description |
+| :--- | :--- |
+| `Code.ipynb` | 📓 Original Jupyter Notebook used for initial development and experiments. |
+| `data_ingestion.py` | 📥 Handles loading books and creating vector embeddings using **Pathway**. |
+| `query_generator.py` | 🧩 Uses an LLM to decompose backstories into verifiable atomic claims and search queries. |
+| `evidence_retrieval.py` | 🔎 Retrieves and re-ranks evidence chunks from the book corpus. |
+| `verification.py` | ⚖️ The "Judge" - verifies claims against retrieved evidence using the LLM. |
+| `validator.py` | ⚙️ Orchestrates the entire pipeline, processing the dataset and generating `results.csv`. |
+| `Dataset/` | 📁 Contains `train.csv`, `test.csv`, and the `Books/` directory. |
+
+## 🚀 Setup & Usage
+
+### Prerequisites
 - Python 3.10+
-- Dependencies listed in `requirements.txt`
+- A Groq API Key
 
-## Setup
+### Installation
 
-1.  Clone the repository:
+1.  **Clone the repository**
     ```bash
     git clone https://github.com/sahilgupta630/KDSH.git
     cd KDSH
     ```
 
-2.  Install dependencies:
+2.  **Install dependencies**
     ```bash
     pip install -r requirements.txt
     ```
 
-3.  Set up Environment Variables:
-    Create a `.env` file or set the following environment variables:
-    - `GROQ_API_KEY`: Your Groq API key for the LLM.
+### Running the Pipeline
 
-## Usage
-
-You can run the pipeline by executing the `Code.ipynb` notebook or by importing the modules in your own script.
-
-The `validator.py` script contains the main `run_validation` function which takes the LLM client, model name, and the indexed data frame as input.
+You can run the full validation pipeline using the `validator.py` script (or by importing it).
 
 ```python
 import os
@@ -47,15 +70,17 @@ from groq import Groq
 from data_ingestion import NovelIngestionPipeline
 from validator import run_validation
 
-# Setup
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
-model_name = "llama3-70b-8192" # or similar
+# 1. Setup Client
+client = Groq(api_key="YOUR_GROQ_API_KEY")
 
-# Ingest Data
+# 2. Ingest Data (Books)
 pipeline = NovelIngestionPipeline("Dataset/Books")
 index_df = pipeline.run_indexing()
 
-# Run Validation
-results = run_validation(client, model_name, index_df, limit=10)
+# 3. Run Validation
+results = run_validation(client, "llama3-70b-8192", index_df, limit=10)
 print(results)
 ```
+
+## 📄 License
+This project is open-source and available under the MIT License.
