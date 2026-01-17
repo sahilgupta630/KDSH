@@ -33,12 +33,12 @@ This project is built using a modern AI/NLP stack:
 
 | File | Description |
 | :--- | :--- |
-| `Code.ipynb` | 📓 Original Jupyter Notebook used for initial development and experiments. |
+| `main.py` | 🚀 **Entry point.** Run this script to execute the full pipeline. |
 | `data_ingestion.py` | 📥 Handles loading books and creating vector embeddings using **Pathway**. |
 | `query_generator.py` | 🧩 Uses an LLM to decompose backstories into verifiable atomic claims and search queries. |
 | `evidence_retrieval.py` | 🔎 Retrieves and re-ranks evidence chunks from the book corpus. |
 | `verification.py` | ⚖️ The "Judge" - verifies claims against retrieved evidence using the LLM. |
-| `validator.py` | ⚙️ Orchestrates the entire pipeline, processing the dataset and generating `results.csv`. |
+| `validator.py` | ⚙️ Orchestrates the validation logic (called by `main.py`). |
 | `Dataset/` | 📁 Contains `train.csv`, `test.csv`, and the `Books/` directory. |
 
 ## 🚀 Setup & Usage
@@ -60,27 +60,24 @@ This project is built using a modern AI/NLP stack:
     pip install -r requirements.txt
     ```
 
+3.  **Configure API Key**
+    Create a `.env` file in the project root and add your Groq API key:
+    ```env
+    GROQ_API_KEY=your_actual_api_key_here
+    ```
+
 ### Running the Pipeline
 
-You can run the full validation pipeline using the `validator.py` script (or by importing it).
+To run the consistency check on the sample dataset:
 
-```python
-import os
-from groq import Groq
-from data_ingestion import NovelIngestionPipeline
-from validator import run_validation
-
-# 1. Setup Client
-client = Groq(api_key="YOUR_GROQ_API_KEY")
-
-# 2. Ingest Data (Books)
-pipeline = NovelIngestionPipeline("Dataset/Books")
-index_df = pipeline.run_indexing()
-
-# 3. Run Validation
-results = run_validation(client, "llama3-70b-8192", index_df, limit=10)
-print(results)
+```bash
+python main.py
 ```
 
+This will:
+1.  Index the books in `Dataset/Books`.
+2.  Decompose and verify stories from `Dataset/train.csv`.
+3.  Save the results to `results.csv`.
+
 ## 📄 License
-This project is open-source and available under the MIT License.
+This project is open-source and available under the [MIT License](LICENSE).
